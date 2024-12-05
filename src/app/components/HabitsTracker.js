@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Moon, Sun, Laptop, Paintbrush, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Moon, Sun, Paintbrush, Trash2 } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "../../components/ui/card";
 import {
   Select,
@@ -17,7 +15,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -154,7 +151,7 @@ const HabitsTracker = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="w-8 h-8">
-                  <Paintbrush className="h-4 w-4" />
+                  <Paintbrush className="h-4 w-4" aria-label={`Current theme: ${theme}`} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
