@@ -83,6 +83,15 @@
     --input: 160 32.6% 17.5%;
     --ring: 160 26.8% 83.9%;
   }
+    /* Reduce overlay darkness */
+    .AlertDialogOverlay {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Add slight transparency to dialog */
+    .AlertDialogContent {
+      background-color: hsl(var(--card) / 0.9);
+    }
 }
  
 @layer base {

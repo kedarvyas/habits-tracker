@@ -25,6 +25,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../components/ui/alert-dialog";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
@@ -76,9 +86,16 @@ const HabitsTracker = () => {
 
     switch (timeframe) {
       case 'week':
-        for (let i = 6; i >= 0; i--) {
-          const date = new Date(today);
-          date.setDate(today.getDate() - i);
+        // Get the current day of the week (0 = Sunday, 6 = Saturday)
+        const currentDay = today.getDay();
+        // Calculate the date of the previous Sunday
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() - currentDay);
+
+        // Generate 7 days starting from Sunday
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(sunday);
+          date.setDate(sunday.getDate() + i);
           dates.push(date);
         }
         break;
@@ -194,50 +211,6 @@ const HabitsTracker = () => {
     return dates;
   };
 
-  // Modified render for year view
-  const renderYearView = (habit) => {
-    const today = new Date();
-    return (
-      <div className="space-y-2">
-        {months.map((month) => (
-          <div key={month.name} className="space-y-2">
-            <button
-              onClick={() => setExpandedMonth(expandedMonth === month.number ? null : month.number)}
-              className="w-full flex items-center justify-between p-2 hover:bg-secondary/30 rounded-md transition-colors"
-            >
-              <span>{month.name}</span>
-              {expandedMonth === month.number ?
-                <ChevronUp className="h-4 w-4" /> :
-                <ChevronDown className="h-4 w-4" />
-              }
-            </button>
-
-            {expandedMonth === month.number && (
-              <div className="grid grid-cols-7 gap-0.5 p-2 bg-secondary/10 rounded-md">
-                {generateMonthDates(today.getFullYear(), month.number).map((date, index) => (
-                  <button
-                    key={index}
-                    onClick={() => toggleHabitEntry(habit.id, date)}
-                    className={`
-                      aspect-square rounded-[1px] transition-all h-4 w-4  // Added fixed size
-                      ${hasEntry
-                        ? 'bg-primary hover:bg-primary/90'
-                        : isToday
-                          ? 'bg-secondary/50 hover:bg-secondary/70'
-                          : 'bg-secondary/20 hover:bg-secondary/30'
-                      }
-                    `}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-
   const renderHabitGrid = (habit) => {
     const today = new Date().toDateString();
 
@@ -266,33 +239,50 @@ const HabitsTracker = () => {
           <div className="grid grid-cols-8 gap-1">
             {lastSixMonths.map((month) => {
               const isCurrentMonth = month.number === today.getMonth();
+              const monthDates = generateMonthDates(month.year, month.number);
+
+              // Calculate grid dimensions based on the number of days
+              const totalDays = monthDates.length;
+              const cols = 4; // Keep 4 columns for consistent layout
+              const rows = Math.ceil(totalDays / cols);
+
               return (
                 <div
                   key={month.name}
                   className={`grid grid-cols-4 gap-0.5 ${isCurrentMonth ? 'bg-secondary/10 rounded-md p-0.5' : ''}`}
+                  style={{
+                    gridTemplateRows: `repeat(${rows}, 1fr)`
+                  }}
                 >
-                  {generateMonthDates(month.year, month.number).map((date, i) => {
+                  {monthDates.map((date, i) => {
                     const isToday = date.toDateString() === today.toDateString();
-                    // Only render first 28 days (7 rows x 4 columns)
-                    if (i < 28) {
-                      return (
+                    const hasEntry = getEntryStatus(habit, date);
+
+                    return (
+                      <div key={i} className="relative group">
                         <button
-                          key={i}
                           onClick={() => toggleHabitEntry(habit.id, date)}
                           className={`
-                            aspect-square rounded-[2px] transition-all
-                            ${getEntryStatus(habit, date)
-                              ? 'bg-primary'
+                            aspect-square rounded-[2px] transition-all w-full
+                            ${hasEntry
+                              ? 'bg-primary hover:bg-primary/90'
                               : isToday
-                                ? 'bg-secondary/50'
-                                : 'bg-secondary/20'
+                                ? 'bg-secondary/50 hover:bg-secondary/70'
+                                : 'bg-secondary/20 hover:bg-secondary/30'
                             }
                             ${habit.streak > 1 ? 'shadow-sm' : ''}
                           `}
                         />
-                      );
-                    }
-                    return null;
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-card text-card-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                          {date.toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </div>
+                    );
                   })}
                 </div>
               );
@@ -308,9 +298,7 @@ const HabitsTracker = () => {
       const actualDates = dates.filter(date => date !== null);
 
       // Calculate optimal grid layout
-      // Use 4 rows to maintain consistent height regardless of month length
       const rows = 4;
-      // Calculate columns needed (ceil to handle all month lengths)
       const cols = Math.ceil(actualDates.length / rows);
 
       return (
@@ -325,19 +313,28 @@ const HabitsTracker = () => {
               const hasEntry = getEntryStatus(habit, date);
 
               return (
-                <button
-                  key={index}
-                  onClick={() => toggleHabitEntry(habit.id, date)}
-                  className={`
-                    aspect-square rounded-md transition-all
-                    ${hasEntry
-                      ? 'bg-primary hover:bg-primary/90'
-                      : isToday
-                        ? 'bg-secondary/50 hover:bg-secondary/70'
-                        : 'bg-secondary/20 hover:bg-secondary/30'
-                    }
-                  `}
-                />
+                <div key={index} className="relative group">
+                  <button
+                    onClick={() => toggleHabitEntry(habit.id, date)}
+                    className={`
+                      aspect-square rounded-md transition-all w-full
+                      ${hasEntry
+                        ? 'bg-primary hover:bg-primary/90'
+                        : isToday
+                          ? 'bg-secondary/50 hover:bg-secondary/70'
+                          : 'bg-secondary/20 hover:bg-secondary/30'
+                      }
+                    `}
+                  />
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-card text-card-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    {date.toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -353,56 +350,36 @@ const HabitsTracker = () => {
             const hasEntry = getEntryStatus(habit, date);
 
             return (
-              <button
-                key={index}
-                onClick={() => toggleHabitEntry(habit.id, date)}
-                className={`
-                  aspect-square transition-all w-full
-                  ${hasEntry
-                    ? 'bg-primary'
-                    : isToday
-                      ? 'bg-secondary/50'
-                      : 'bg-secondary/20'
-                  }
-                `}
-              />
+              <div key={index} className="relative group">
+                <button
+                  onClick={() => toggleHabitEntry(habit.id, date)}
+                  className={`
+                    aspect-square transition-all w-full
+                    ${hasEntry
+                      ? 'bg-primary hover:bg-primary/90'
+                      : isToday
+                        ? 'bg-secondary/50 hover:bg-secondary/70'
+                        : 'bg-secondary/20 hover:bg-secondary/30'
+                    }
+                  `}
+                />
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-card text-card-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  {date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>
       );
     }
 
-    return (
-      <div className="flex flex-wrap gap-0.5">
-        {generateDates().map((date, index) => {
-          if (!date) {
-            return <div key={`empty-${index}`} className="w-5 h-5" />;
-          }
-
-          const isToday = date.toDateString() === today;
-          const hasEntry = getEntryStatus(habit, date);
-
-          return (
-            <button
-              key={index}
-              onClick={() => toggleHabitEntry(habit.id, date)}
-              className={`
-                w-5 h-5 transition-all
-                ${hasEntry
-                  ? 'bg-primary'
-                  : isToday
-                    ? 'bg-secondary/50'
-                    : 'bg-secondary/20'
-                }
-              `}
-            />
-          );
-        })}
-      </div>
-    );
-  };
-
-
+    return null;
+  }
 
   const formatDate = (date) => {
     if (timeframe === 'year') {
@@ -492,14 +469,33 @@ const HabitsTracker = () => {
                     {habit.streak} DAY STREAK
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => deleteHabit(habit.id)}
-                  className="h-8 w-8 p-0 hover:bg-destructive/10"
-                >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-card/90 border-none sm:max-w-[360px]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-base">Delete habit &quot;{habit.name}&quot;?</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="space-x-2">
+                      <AlertDialogCancel className="bg-secondary/50 hover:bg-secondary/70">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteHabit(habit.id)}
+                        className="bg-destructive/40 hover:bg-destructive/60 text-destructive-foreground"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
               {renderHabitGrid(habit)}
             </CardContent>
