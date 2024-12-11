@@ -83,6 +83,27 @@
     --input: 160 32.6% 17.5%;
     --ring: 160 26.8% 83.9%;
   }
+
+  .blood {
+    --background: 0 35% 4.9%;
+    --foreground: 0 40% 98%;
+    --card: 0 47% 11%;
+    --card-foreground: 0 40% 98%;
+    --secondary: 0 32.6% 17.5%;
+    --secondary-foreground: 0 40% 98%;
+    --primary: 0 91.2% 69.8%;
+    --primary-foreground: 0 47.4% 11.2%;
+    --muted: 0 32.6% 17.5%;
+    --muted-foreground: 0 20.2% 65.1%;
+    --accent: 0 32.6% 17.5%;
+    --accent-foreground: 0 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 40% 98%;
+    --border: 0 32.6% 17.5%;
+    --input: 0 32.6% 17.5%;
+    --ring: 0 26.8% 83.9%;
+  }
+
     /* Reduce overlay darkness */
     .AlertDialogOverlay {
       background-color: rgba(0, 0, 0, 0.3);
@@ -100,5 +121,8 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+  *, *::before, *::after {
+    @apply transition-colors duration-200;
   }
 }

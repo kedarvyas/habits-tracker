@@ -317,14 +317,14 @@ const HabitsTracker = () => {
                   <button
                     onClick={() => toggleHabitEntry(habit.id, date)}
                     className={`
-                      aspect-square rounded-md transition-all w-full
-                      ${hasEntry
+    aspect-square rounded-md transition-all w-full
+    ${hasEntry
                         ? 'bg-primary hover:bg-primary/90'
                         : isToday
-                          ? 'bg-secondary/50 hover:bg-secondary/70'
-                          : 'bg-secondary/20 hover:bg-secondary/30'
+                          ? 'bg-secondary/70 hover:bg-secondary/80'
+                          : 'bg-secondary/40 hover:bg-secondary/50'
                       }
-                    `}
+  `}
                   />
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-card text-card-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                     {date.toLocaleDateString('en-US', {
@@ -419,7 +419,10 @@ const HabitsTracker = () => {
                   <Paintbrush className="h-4 w-4" aria-label={`Current theme: ${theme}`} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent
+                align="end"
+                className="bg-card/95 border-none"
+              >
                 <DropdownMenuItem onClick={() => setTheme("light")}>
                   <Sun className="mr-2 h-4 w-4" />
                   Light
@@ -435,6 +438,10 @@ const HabitsTracker = () => {
                 <DropdownMenuItem onClick={() => setTheme("mint")}>
                   <div className="w-4 h-4 rounded-full bg-emerald-500 mr-2" />
                   Mint
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("blood")}>
+                  <div className="w-4 h-4 rounded-full bg-red-900 mr-2" />
+                  Blood
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

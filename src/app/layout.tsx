@@ -15,13 +15,8 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
-          value={{
-            light: "light",
-            dark: "dark",
-            purple: "purple",
-            mint: "mint"
-          }}
           enableSystem
+          themes={["light", "dark", "purple", "mint", "blood"]}  
         >
           {children}
         </ThemeProvider>
