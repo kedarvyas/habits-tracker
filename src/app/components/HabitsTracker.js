@@ -405,62 +405,68 @@ const HabitsTracker = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto p-4">
         {/* Header */}
-        <div className="flex justify-between items-center py-6">
-          <div className="flex items-center space-x-2">
-            <div className="bg-primary/20 p-2 rounded-md">
-              <Calendar className="w-5 h-5 text-primary" />
+        <div>
+          {/* Top row with logo and controls */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <div className="bg-primary/20 p-2 rounded-md">
+                <Calendar className="w-5 h-5 text-primary" />
+              </div>
+              <h1 className="text-xl font-medium">habits</h1>
             </div>
-            <h1 className="text-xl font-medium">habits</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="w-8 h-8">
-                  <Paintbrush className="h-4 w-4" aria-label={`Current theme: ${theme}`} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-card/95 border-none"
-              >
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  <Sun className="mr-2 h-4 w-4" />
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  <Moon className="mr-2 h-4 w-4" />
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("purple")}>
-                  <div className="w-4 h-4 rounded-full bg-purple-500 mr-2" />
-                  Purple
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("mint")}>
-                  <div className="w-4 h-4 rounded-full bg-emerald-500 mr-2" />
-                  Mint
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("blood")}>
-                  <div className="w-4 h-4 rounded-full bg-red-900 mr-2" />
-                  Blood
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="w-8 h-8">
+                    <Paintbrush className="h-4 w-4" aria-label={`Current theme: ${theme}`} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-card/95 border-none"
+                >
+                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                    <Sun className="mr-2 h-4 w-4" />
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    <Moon className="mr-2 h-4 w-4" />
+                    Dark
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("purple")}>
+                    <div className="w-4 h-4 rounded-full bg-purple-500 mr-2" />
+                    Purple
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("mint")}>
+                    <div className="w-4 h-4 rounded-full bg-emerald-500 mr-2" />
+                    Mint
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("blood")}>
+                    <div className="w-4 h-4 rounded-full bg-red-900 mr-2" />
+                    Blood
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="w-28 bg-card border-none">
-                <SelectValue placeholder="Select time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="week">Week</SelectItem>
-                <SelectItem value="month">Month</SelectItem>
-                <SelectItem value="year">Year</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={timeframe} onValueChange={setTimeframe}>
+                <SelectTrigger className="w-28 bg-card border-none">
+                  <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">Week</SelectItem>
+                  <SelectItem value="month">Month</SelectItem>
+                  <SelectItem value="year">Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Centered titles below */}
+          <div className="text-center mt-6 mb-8">
+            <h1 className="text-5xl font-bold tracking-tight mb-2">habits</h1>
+            <p className="text-muted-foreground text-sm">Track your habits every day</p>
           </div>
         </div>
-
-        {/* Subtitle */}
-        <p className="text-muted-foreground text-sm mb-8">Track your habits every day</p>
 
         {/* Habits List */}
         {habits.map(habit => (
@@ -486,20 +492,22 @@ const HabitsTracker = () => {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-card/90 border-none sm:max-w-[360px]">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="text-base">Delete habit &quot;{habit.name}&quot;?</AlertDialogTitle>
+                  <AlertDialogContent className="bg-card/90 border-none sm:max-w-[300px] w-[90%] p-4"> {/* Reduced max-width and added padding */}
+                    <AlertDialogHeader className="space-y-2 pb-2">
+                      <AlertDialogTitle className="text-base text-center">
+                        Delete habit &quot;{habit.name}&quot;?
+                      </AlertDialogTitle>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="space-x-2">
-                      <AlertDialogCancel className="bg-secondary/50 hover:bg-secondary/70">
-                        Cancel
-                      </AlertDialogCancel>
+                    <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row sm:gap-2">
                       <AlertDialogAction
                         onClick={() => deleteHabit(habit.id)}
-                        className="bg-destructive/40 hover:bg-destructive/60 text-destructive-foreground"
+                        className="bg-destructive/40 hover:bg-destructive/60 text-destructive-foreground sm:order-2 w-full"
                       >
                         Delete
                       </AlertDialogAction>
+                      <AlertDialogCancel className="bg-secondary/50 hover:bg-secondary/70 sm:order-1 w-full">
+                        Cancel
+                      </AlertDialogCancel>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -514,9 +522,9 @@ const HabitsTracker = () => {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="w-full mt-6 bg-card border-none hover:bg-secondary/50"
+              className="w-full mt-6 bg-card border-none hover:bg-secondary/50 py-6 text-lg"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-5 h-5 mr-2" />
               Create
             </Button>
           </DialogTrigger>
@@ -571,6 +579,12 @@ const HabitsTracker = () => {
             </div>
           </DialogContent>
         </Dialog>
+      </div>
+      {/* Footer */}
+      <div className="flex justify-center mt-12 mb-4">
+        <p className="text-xs text-muted-foreground font-light tracking-wide">
+          built by kv - v1.1
+        </p>
       </div>
     </div>
   );
