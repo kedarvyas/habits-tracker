@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Moon, Sun, Paintbrush, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Plus, Moon, Sun, Paintbrush, Trash2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -46,7 +46,6 @@ const HabitsTracker = () => {
   const [timeframe, setTimeframe] = useState('month');
   const [newHabit, setNewHabit] = useState({ name: '', frequency: 1, period: 'week' });
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [expandedMonth, setExpandedMonth] = useState(null);
 
   const [habits, setHabits] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -380,13 +379,6 @@ const HabitsTracker = () => {
 
     return null;
   }
-
-  const formatDate = (date) => {
-    if (timeframe === 'year') {
-      return months[date.getMonth()].name;
-    }
-    return date.getDate();
-  };
 
   const getEntryStatus = (habit, date) => {
     const dateStr = date.toISOString().split('T')[0];
